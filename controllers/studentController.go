@@ -4,6 +4,7 @@ import (
 	"bd_admin/models"
 	u "bd_admin/utils"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -11,7 +12,7 @@ var CreateStudent = func(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value("user") . (uint) //Получение идентификатора пользователя, отправившего запрос
 	student := &models.Student{}
-
+	fmt.Println(user)
 	err := json.NewDecoder(r.Body).Decode(student)
 	if err != nil {
 		u.Respond(w, u.Message(false, "Error while decoding request body"))

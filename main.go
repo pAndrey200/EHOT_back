@@ -19,7 +19,7 @@ func main() {
 	router.HandleFunc("/api/teacher/info", controllers.CreateTeacher).Methods("POST")
 
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware
-
+	router.Use(app.TeacherRights)
 	//router.NotFoundHandler = app.NotFoundHandler
 
 	port := os.Getenv("PORT")
