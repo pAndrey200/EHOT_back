@@ -9,10 +9,10 @@ import (
 
 type Student struct {
 	AccountID       uint   `gorm:"primary_key"`
-	FirstName   string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Group   string `json:"group"`
-	Year   uint `json:"year"`
+	FirstName       string `json:"first_name"`
+	LastName        string `json:"last_name"`
+	Group   		string `json:"group"`
+	Year   			uint `json:"year"`
 }
 
 func (student *Student) Create() map[string] interface{} {
