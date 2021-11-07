@@ -22,3 +22,16 @@ var CreateTeacher = func(w http.ResponseWriter, r *http.Request) {
 	resp := teacher.Create()
 	u.Respond(w, resp)
 }
+
+var CreateSub = func(w http.ResponseWriter, r *http.Request) {
+	schedule := &models.Schedule{}
+
+	err := json.NewDecoder(r.Body).Decode(schedule)
+	if err != nil {
+		u.Respond(w, u.Message(false, "Error while decoding request body"))
+		return
+	}
+
+	resp := schedule.Create()
+	u.Respond(w, resp)
+}

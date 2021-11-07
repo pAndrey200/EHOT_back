@@ -17,6 +17,7 @@ func main() {
 	router.HandleFunc("/api/user/login", controllers.Authenticate).Methods("POST")
 	router.HandleFunc("/api/student/info", controllers.CreateStudent).Methods("POST")
 	router.HandleFunc("/api/teacher/info", controllers.CreateTeacher).Methods("POST")
+	router.HandleFunc("/api/sub/new", controllers.CreateSub).Methods("POST")
 
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware
 	router.Use(app.TeacherRights)
