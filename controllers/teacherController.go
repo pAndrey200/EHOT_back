@@ -35,3 +35,16 @@ var CreateSub = func(w http.ResponseWriter, r *http.Request) {
 	resp := schedule.Create()
 	u.Respond(w, resp)
 }
+
+var UpdateStudentAttendance = func(w http.ResponseWriter, r *http.Request) {
+	attend := &models.Attendance{}
+
+	err := json.NewDecoder(r.Body).Decode(attend)
+	if err != nil {
+		u.Respond(w, u.Message(false, "Error while decoding request body"))
+		return
+	}
+
+	resp := attend.Create()
+	u.Respond(w, resp)
+}
