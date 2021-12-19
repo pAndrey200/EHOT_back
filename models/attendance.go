@@ -23,7 +23,7 @@ func (attend *Attendance) Create() map[string] interface{} {
 func GetAttendance(user uint) []*Attendance {
 
 	attend := make([]*Attendance, 0)
-	err := GetDB().Table("attendances").Where("user_id = ?", user).Find(&attend).Error
+	err := GetDB().Table("attendances").Where("student_id = ?", user).Find(&attend).Error
 	if err != nil {
 		fmt.Println(err)
 		return nil
