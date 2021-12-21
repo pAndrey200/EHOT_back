@@ -21,6 +21,7 @@ func main() {
 	router.HandleFunc("/api/student/setAttendance", controllers.UpdateStudentAttendance).Methods("POST")
 
 	router.HandleFunc("/api/student/getAllAttendance", controllers.GetStudentAttendance).Methods("GET")
+	router.HandleFunc("/api/teacher/{month}/{sub_id}", controllers.GetGroupAttendance).Methods("GET")
 
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware
 	router.Use(app.TeacherRights)
