@@ -8,14 +8,14 @@ import (
 )
 
 type Student struct {
-	AccountID       uint   `gorm:"primary_key"`
-	FirstName       string `json:"first_name"`
-	LastName        string `json:"last_name"`
-	Group   		string `json:"group"`
-	Year   			uint `json:"year"`
+	AccountID uint   `gorm:"primary_key"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Group     string `json:"group"`
+	Year      uint   `json:"year"`
 }
 
-func (student *Student) Create() map[string] interface{} {
+func (student *Student) Create() map[string]interface{} {
 
 	//if resp, ok := contact.Validate(); !ok {
 	//	return resp
@@ -27,4 +27,3 @@ func (student *Student) Create() map[string] interface{} {
 	resp["respond"] = student
 	return resp
 }
-

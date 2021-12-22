@@ -20,6 +20,7 @@ func main() {
 	router.HandleFunc("/api/sub/new", controllers.CreateSub).Methods("POST")
 	router.HandleFunc("/api/student/setAttendance", controllers.UpdateStudentAttendance).Methods("POST")
 
+	router.HandleFunc("/api/student/qrcode", controllers.GetQRCode).Methods("GET")
 	router.HandleFunc("/api/student/getAllAttendance", controllers.GetStudentAttendance).Methods("GET")
 	router.HandleFunc("/api/teacher/{month}/{sub_id}", controllers.GetGroupAttendance).Methods("GET")
 
