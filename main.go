@@ -22,6 +22,7 @@ func main() {
 
 	router.HandleFunc("/api/student/qrcode", controllers.GetQRCode).Methods("GET")
 	router.HandleFunc("/api/student/getAllAttendance", controllers.GetStudentAttendance).Methods("GET")
+	router.HandleFunc("/api/user/getInfo", controllers.GetInfo).Methods("GET")
 	router.HandleFunc("/api/teacher/{month}/{sub_id}", controllers.GetGroupAttendance).Methods("GET")
 
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware

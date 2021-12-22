@@ -5,6 +5,7 @@ import (
 	u "bd_admin/utils"
 	"encoding/json"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"time"
 )
@@ -33,20 +34,55 @@ var GetStudentAttendance = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
+var GetInfo = func(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(uint)
+	acc := models.Account{}
+	err := models.GetDB().Table("accounts").Where("ID = ?", user).First(&acc).Error
+	if err != nil {
+		u.Respond(w, u.Message(false, "Error while exec query "+err.Error()))
+		return
+	}
+	resp := u.Message(true, "success")
+	if acc.Role == "student" {
+		st := models.Student{}
+		err := models.GetDB().Table("students").Where("account_id = ?", user).First(&st).Error
+		if err != nil {
+			u.Respond(w, u.Message(false, "Error while exec query "+err.Error()))
+			return
+		}
+		resp["data"] = st
+	} else {
+		t := models.Teacher{}
+		err := models.GetDB().Table("teachers").Where("account_id = ?", user).First(&t).Error
+		if err != nil {
+			u.Respond(w, u.Message(false, "Error while exec query "+err.Error()))
+			return
+		}
+		resp["data"] = t
+	}
+	u.Respond(w, resp)
+}
+
 var GetQRCode = func(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value("user").(uint)
 	curTime := time.Now()
 	s := models.Schedule{}
-	fmt.Println(curTime.Add(-40 * time.Minute).Format("15:04:05"))
-	//err := models.GetDB().Table("schedules").Where("schedules.group = 'fn11-33b' AND (time > ? OR time < ?", curTime.Add(-40*time.Minute).Format("15:04:05"), curTime.Add(10*time.Minute).Format("15:04:05")).Find(&s).Error
-	err := models.GetDB().Raw("SELECT * FROM schedules WHERE schedules.group = 'fn11-33b' AND (time > curtime OR time < ?", curTime.Add(-40*time.Minute).Format("15:04:05"), curTime.Add(10*time.Minute)).First(&s).Error
-
+	ss := models.Student{}
+	err := models.GetDB().Table("students").Where("account_id = ?", user).First(&ss).Error
 	if err != nil {
-		fmt.Println(err)
-		u.Respond(w, u.Message(false, "Error while exec query"))
+		u.Respond(w, u.Message(false, "Error while exec query "+err.Error()))
 		return
 	}
+	err = models.GetDB().Table("schedules").Where("schedules.group = ? AND time > ? AND time < ? AND day = ?", ss.Group, curTime.Add(-40*time.Minute).Format("15:04:05"), curTime.Add(10*time.Minute).Format("15:04:05"), string(time.Now().Weekday())).First(&s).Error
+	//err := models.GetDB().Raw("SELECT * FROM schedules WHERE schedules.group = 'fn11-33b' AND  (time >= (CURRENT_TIME - interval '40 minutes') OR time <= (CURRENT_TIME + interval '10 minutes'))").Find(&s).Error
+
+	if err == gorm.ErrRecordNotFound {
+		fmt.Println(err)
+		u.Respond(w, u.Message(false, "there is no lesson now"))
+		return
+	}
+
 	//data := models.GetAttendance(user)
 	resp := u.Message(true, "success")
 	resp["sub_id"] = s.SubID
