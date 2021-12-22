@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"strconv"
 	"strings"
@@ -55,6 +56,12 @@ var UpdateStudentAttendance = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
+type stud struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Attend    bool   `json:"attend"`
+}
+
 var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 	month, _ := strconv.Atoi(mux.Vars(r)["month"])
 	subId, _ := strconv.Atoi(mux.Vars(r)["sub_id"])
@@ -73,11 +80,36 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 	}
 	date := time.Date(time.Now().Year(), time.Month(month), 1, 0, 0, 0, 0, l)
 	resp := u.Message(true, "success")
+	students := make([]*models.Student, 0)
+
 	for date.Month() == time.Month(month) {
 		for i := 0; i < len(temp); i++ {
 			if strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String()) {
+				err := models.GetDB().Table("students").Where("students.group = ?", temp[i].Group).Find(&students).Error
+
+				if err != nil {
+					fmt.Println(err)
+					u.Respond(w, u.Message(false, "Error while exec query"))
+					return
+				}
 				t := date.Format("2006-01-02") + " " + temp[i].Time[11:19]
-				resp[t] = date.Day()
+				s := make([]*stud, 0)
+				for j := 0; j < len(students); j++ {
+					ss := &stud{}
+					temp1 := &models.Attendance{}
+					err := models.GetDB().Table("attendances").Where("student_id = ? AND sub_id = ? AND date = ?", students[j].AccountID, subId, date.Format("2006-01-02")).First(temp1).Error
+					fmt.Println(temp1.StudentId, students[j].AccountID, temp1.Date)
+
+					if err == gorm.ErrRecordNotFound {
+						ss.Attend = false
+					} else {
+						ss.Attend = temp1.Attend
+					}
+					ss.LastName = students[j].LastName
+					ss.FirstName = students[j].FirstName
+					s = append(s, ss)
+				}
+				resp[t] = s
 			}
 		}
 		date = date.AddDate(0, 0, 1)
