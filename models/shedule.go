@@ -11,7 +11,7 @@ type Schedule struct {
 	TeacherID      uint
 	TeacherName    string `json:"teacher_name"`
 	TeacherSurname string `json:"teacher_surname"`
-	Group          string `json:"group" gorm:"primaryKey;autoIncrement:false"`
+	Group          string `gorm:"primaryKey;autoIncrement:false" json:"group"`
 	Time           string `gorm:"type:time" json:"time"`
 	Day            string `json:"day"`
 	SubName        string `json:"subject"`
