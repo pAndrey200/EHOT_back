@@ -56,6 +56,34 @@ var UpdateStudentAttendance = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
+type subId struct {
+	Name  string `json:"sub_name"`
+	Group string `json:"group"`
+	Id    uint   `json:"sub_id"`
+}
+
+var GetSub = func(w http.ResponseWriter, r *http.Request) {
+	subs := make([]*models.Schedule, 0)
+	user := r.Context().Value("user").(uint)
+	err := models.GetDB().Table("schedules").Select("sub_name, sub_id, schedules.group").Where("teacher_id = ?", user).Find(&subs).Error
+	if err != nil {
+		fmt.Println(err)
+		u.Respond(w, u.Message(false, "Error while exec query"))
+		return
+	}
+	resp := u.Message(true, "success")
+	subs2 := make([]*subId, 0)
+	for i := 0; i < len(subs); i++ {
+		temp := subId{}
+		temp.Id = subs[i].SubID
+		temp.Group = subs[i].Group
+		temp.Name = subs[i].SubName
+		subs2 = append(subs2, &temp)
+	}
+	resp["data"] = subs2
+	u.Respond(w, resp)
+}
+
 type stud struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`

@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -74,19 +76,17 @@ var GetQRCode = func(w http.ResponseWriter, r *http.Request) {
 		u.Respond(w, u.Message(false, "Error while exec query "+err.Error()))
 		return
 	}
-	err = models.GetDB().Table("schedules").Where("schedules.group = ? AND time > ? AND time < ? AND day = ?", ss.Group, curTime.Add(-40*time.Minute).Format("15:04:05"), curTime.Add(10*time.Minute).Format("15:04:05"), string(time.Now().Weekday())).First(&s).Error
+	err = models.GetDB().Table("schedules").Where("schedules.group = ? AND time > ? AND time < ? AND day = ?", ss.Group, curTime.Add(-40*time.Minute).Format("15:04:05"), curTime.Add(10*time.Minute).Format("15:04:05"), strings.ToLower(time.Now().Weekday().String())).First(&s).Error
 	//err := models.GetDB().Raw("SELECT * FROM schedules WHERE schedules.group = 'fn11-33b' AND  (time >= (CURRENT_TIME - interval '40 minutes') OR time <= (CURRENT_TIME + interval '10 minutes'))").Find(&s).Error
-
+	var str string
 	if err == gorm.ErrRecordNotFound {
 		fmt.Println(err)
 		u.Respond(w, u.Message(false, "there is no lesson now"))
 		return
+	} else {
+		str = strconv.Itoa(int(user)) + " " + strconv.Itoa(int(s.SubID)) + " " + time.Now().Format("2006-01-02") + " " + "true"
 	}
-
-	//data := models.GetAttendance(user)
 	resp := u.Message(true, "success")
-	resp["sub_id"] = s.SubID
-	resp["user"] = user
-	//resp["data"] = data
+	resp["token"] = str
 	u.Respond(w, resp)
 }
