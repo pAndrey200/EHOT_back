@@ -74,11 +74,19 @@ var GetSub = func(w http.ResponseWriter, r *http.Request) {
 	resp := u.Message(true, "success")
 	subs2 := make([]*subId, 0)
 	for i := 0; i < len(subs); i++ {
-		temp := subId{}
-		temp.Id = subs[i].SubID
-		temp.Group = subs[i].Group
-		temp.Name = subs[i].SubName
-		subs2 = append(subs2, &temp)
+		flag := true
+		for j := 0; j < len(subs2); j++ {
+			if subs[i].SubID == subs2[j].Id {
+				flag = false
+			}
+		}
+		if flag {
+			temp := subId{}
+			temp.Id = subs[i].SubID
+			temp.Group = subs[i].Group
+			temp.Name = subs[i].SubName
+			subs2 = append(subs2, &temp)
+		}
 	}
 	resp["data"] = subs2
 	u.Respond(w, resp)
