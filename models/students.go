@@ -10,7 +10,6 @@ import (
 type Student struct {
 	AccountID uint   `gorm:"primary_key"`
 	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
 	Group     string `json:"group"`
 	Year      uint   `json:"year"`
 }

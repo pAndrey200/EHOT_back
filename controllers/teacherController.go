@@ -94,7 +94,6 @@ var GetSub = func(w http.ResponseWriter, r *http.Request) {
 
 type stud struct {
 	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
 	Attend    bool   `json:"attend"`
 }
 
@@ -141,7 +140,6 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 					} else {
 						ss.Attend = temp1.Attend
 					}
-					ss.LastName = students[j].LastName
 					ss.FirstName = students[j].FirstName
 					s = append(s, ss)
 				}

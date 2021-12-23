@@ -3,12 +3,11 @@ package models
 import u "bd_admin/utils"
 
 type Teacher struct {
-	AccountID     uint   `gorm:"primary_key"`
-	FirstName  	  string `json:"first_name"`
-	LastName 	  string `json:"last_name"`
+	AccountID uint   `gorm:"primary_key"`
+	FirstName string `json:"first_name"`
 }
 
-func (teacher *Teacher) Create() map[string] interface{} {
+func (teacher *Teacher) Create() map[string]interface{} {
 
 	GetDB().Create(teacher)
 
