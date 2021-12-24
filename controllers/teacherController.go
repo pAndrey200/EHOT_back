@@ -95,6 +95,7 @@ var GetSub = func(w http.ResponseWriter, r *http.Request) {
 type stud struct {
 	FirstName string `json:"first_name"`
 	Attend    bool   `json:"attend"`
+	Date      string `json:"date"`
 }
 
 var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +117,7 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 	date := time.Date(time.Now().Year(), time.Month(month), 1, 0, 0, 0, 0, l)
 	resp := u.Message(true, "success")
 	students := make([]*models.Student, 0)
-
+	k := 0
 	for date.Month() == time.Month(month) {
 		for i := 0; i < len(temp); i++ {
 			if strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String()) {
@@ -141,13 +142,17 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 						ss.Attend = temp1.Attend
 					}
 					ss.FirstName = students[j].FirstName
+					ss.Date = t
 					s = append(s, ss)
 				}
-				resp[t] = s
+				resp[strconv.Itoa(k)] = s
+				k++
 			}
+
 		}
 		date = date.AddDate(0, 0, 1)
-	}
 
+	}
+	resp["amount"] = k
 	u.Respond(w, resp)
 }
