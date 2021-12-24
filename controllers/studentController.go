@@ -65,7 +65,7 @@ var GetInfo = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
-var GetQRCode = func(w http.ResponseWriter, r *http.Request) {
+var SentQRCode = func(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value("user").(uint)
 	curTime := time.Now()

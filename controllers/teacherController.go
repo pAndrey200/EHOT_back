@@ -56,7 +56,25 @@ var UpdateStudentAttendance = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
-type subId struct {
+type str struct {
+	Key string `json:"key"`
+}
+
+var GetQRCode = func(w http.ResponseWriter, r *http.Request) {
+	s := str{}
+	err := json.NewDecoder(r.Body).Decode(&s)
+	fmt.Println(s)
+	if err != nil {
+		fmt.Println(err)
+		u.Respond(w, u.Message(false, "Error while decoding request body"))
+		return
+	}
+
+	resp := u.Message(true, "success")
+	u.Respond(w, resp)
+}
+
+type SubId struct {
 	Name  string `json:"sub_name"`
 	Group string `json:"group"`
 	Id    uint   `json:"sub_id"`
@@ -72,7 +90,7 @@ var GetSub = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp := u.Message(true, "success")
-	subs2 := make([]*subId, 0)
+	subs2 := make([]*SubId, 0)
 	for i := 0; i < len(subs); i++ {
 		flag := true
 		for j := 0; j < len(subs2); j++ {
@@ -81,7 +99,7 @@ var GetSub = func(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if flag {
-			temp := subId{}
+			temp := SubId{}
 			temp.Id = subs[i].SubID
 			temp.Group = subs[i].Group
 			temp.Name = subs[i].SubName
@@ -94,6 +112,7 @@ var GetSub = func(w http.ResponseWriter, r *http.Request) {
 
 type stud struct {
 	FirstName string `json:"first_name"`
+	StudentId uint   `json:"student_id"`
 	Attend    bool   `json:"attend"`
 	Date      string `json:"date"`
 }
@@ -142,6 +161,7 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 						ss.Attend = temp1.Attend
 					}
 					ss.FirstName = students[j].FirstName
+					ss.StudentId = students[j].AccountID
 					ss.Date = t
 					s = append(s, ss)
 				}
