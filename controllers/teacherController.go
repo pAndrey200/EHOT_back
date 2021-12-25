@@ -44,15 +44,28 @@ var CreateSub = func(w http.ResponseWriter, r *http.Request) {
 
 var UpdateStudentAttendance = func(w http.ResponseWriter, r *http.Request) {
 	attend := &models.Attendance{}
-
+	attend2 := &models.Attendance{}
 	err := json.NewDecoder(r.Body).Decode(attend)
 	if err != nil {
 		fmt.Println(err)
 		u.Respond(w, u.Message(false, "Error while decoding request body"))
 		return
 	}
+	err = models.GetDB().Table("attendances").Where("student_id = ? AND sub_id = ? AND date = ?", attend.StudentId, attend.SubId, attend.Date).First(attend2).Error
+	var resp map[string]interface{}
+	if err == gorm.ErrRecordNotFound {
+		resp = attend.Create()
+	} else {
+		err = models.GetDB().Table("attendances").Where("student_id = ? AND sub_id = ? AND date = ?", attend.StudentId, attend.SubId, attend.Date).Update("attend", attend.Attend).Error
+		if err != nil {
+			fmt.Println(err)
+			u.Respond(w, u.Message(false, "Error while exec query"))
+			return
+		}
+		resp = u.Message(true, "success update")
 
-	resp := attend.Create()
+	}
+
 	u.Respond(w, resp)
 }
 
