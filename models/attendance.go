@@ -6,8 +6,8 @@ import (
 )
 
 type Attendance struct {
-	StudentId uint   `json:"student_id"`
-	SubId     uint   `json:"sub_id"`
+	StudentId uint64 `json:"student_id"`
+	SubId     uint64 `json:"sub_id"`
 	Date      string `gorm:"type:date" json:"date"`
 	Attend    bool   `json:"attendance"`
 }
