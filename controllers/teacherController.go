@@ -163,7 +163,7 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 		for i := 0; i < len(temp); i++ {
 			if strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String()) {
 				err := models.GetDB().Table("students").Where("students.group = ?", temp[i].Group).Find(&students).Error
-
+				fmt.Println(temp[i].Group)
 				if err != nil {
 					fmt.Println(err)
 					u.Respond(w, u.Message(false, "Error while exec query"))
