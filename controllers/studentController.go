@@ -69,6 +69,7 @@ var SentQRCode = func(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value("user").(uint)
 	curTime := time.Now()
+	fmt.Println(curTime)
 	s := models.Schedule{}
 	ss := models.Student{}
 	err := models.GetDB().Table("students").Where("account_id = ?", user).First(&ss).Error
