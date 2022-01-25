@@ -196,12 +196,15 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	date := time.Date(time.Now().Year(), time.Month(month), 1, 0, 0, 0, 0, l)
+	startDate := time.Date(time.Now().Year(), time.Month(2), 7, 0, 0, 0, 0, l)
+	_, st := startDate.ISOWeek()
+	_, en := date.ISOWeek()
 	resp := u.Message(true, "success")
 	students := make([]*models.Student, 0)
 	k := 0
 	for date.Month() == time.Month(month) {
 		for i := 0; i < len(temp); i++ {
-			if (strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String())) && (temp[i].Week == 0 || temp[i].Week == ChetnostOfWeek(date)) {
+			if (strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String())) && (temp[i].Week == 0 || temp[i].Week == ChetnostOfWeek(date)) && (en >= st) {
 				err := models.GetDB().Table("students").Where("students.group = ?", temp[i].Group).Find(&students).Error
 				fmt.Println(temp[i].Group)
 				if err != nil {
@@ -215,7 +218,7 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 					ss := &stud{}
 					temp1 := &models.Attendance{}
 					err := models.GetDB().Table("attendances").Where("student_id = ? AND sub_id = ? AND date = ?", students[j].AccountID, subId, date.Format("2006-01-02")).First(temp1).Error
-					fmt.Println(temp1.StudentId, students[j].AccountID, temp1.Date)
+					//fmt.Println(temp1.StudentId, students[j].AccountID, temp1.Date)
 
 					if err == gorm.ErrRecordNotFound {
 						ss.Attend = false
