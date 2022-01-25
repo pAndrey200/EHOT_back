@@ -76,17 +76,36 @@ type str struct {
 var GetQRCode = func(w http.ResponseWriter, r *http.Request) {
 	s := str{}
 	err := json.NewDecoder(r.Body).Decode(&s)
+
 	if err != nil {
 		fmt.Println(err)
 		u.Respond(w, u.Message(false, "Error while decoding request body"))
 		return
 	}
+
 	words := strings.Fields(s.Key)
 	attend := &models.Attendance{}
 	attend.StudentId, _ = strconv.ParseUint(words[0], 10, 64)
-	attend.SubId, _ = strconv.ParseUint(words[1], 10, 64)
-	attend.Date = words[2]
-	attend.Attend, _ = strconv.ParseBool(words[3])
+	attend.Attend, _ = strconv.ParseBool(words[1])
+	attend.Date = time.Now().Format("2006-01-02")
+
+	curTime := time.Now()
+	s1 := models.Schedule{}
+	ss := models.Student{}
+	err = models.GetDB().Table("students").Where("account_id = ?", words[0]).First(&ss).Error
+	if err != nil {
+		u.Respond(w, u.Message(false, "Error while exec query "+err.Error()))
+		return
+	}
+	err = models.GetDB().Table("schedules").Where("schedules.group = ? AND time > ? AND time < ? AND day = ?", ss.Group, curTime.Add(-40*time.Minute+3*time.Hour).Format("15:04:05"), curTime.Add(10*time.Minute+3*time.Hour).Format("15:04:05"), strings.ToLower(time.Now().Weekday().String())).First(&s1).Error
+	if err == gorm.ErrRecordNotFound {
+		fmt.Println(err)
+		u.Respond(w, u.Message(false, "there is no lesson now"))
+		return
+	} else {
+		attend.SubId = uint64(s1.SubID)
+	}
+
 	attend2 := &models.Attendance{}
 	err = models.GetDB().Table("attendances").Where("student_id = ? AND sub_id = ? AND date = ?", attend.StudentId, attend.SubId, attend.Date).First(attend2).Error
 	if err == gorm.ErrRecordNotFound {
