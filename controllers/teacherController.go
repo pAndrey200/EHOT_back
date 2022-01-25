@@ -198,13 +198,13 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 	date := time.Date(time.Now().Year(), time.Month(month), 1, 0, 0, 0, 0, l)
 	startDate := time.Date(time.Now().Year(), time.Month(2), 7, 0, 0, 0, 0, l)
 	_, st := startDate.ISOWeek()
-	_, en := date.ISOWeek()
 	resp := u.Message(true, "success")
 	students := make([]*models.Student, 0)
 	k := 0
 	for date.Month() == time.Month(month) {
+		_, en := date.ISOWeek()
 		for i := 0; i < len(temp); i++ {
-			if (strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String())) && (temp[i].Week == 0 || temp[i].Week == ChetnostOfWeek(date)) && (en >= st) {
+			if (strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String())) && ((temp[i].Week == 0 && en >= st) || temp[i].Week == ChetnostOfWeek(date)) {
 				err := models.GetDB().Table("students").Where("students.group = ?", temp[i].Group).Find(&students).Error
 				fmt.Println(temp[i].Group)
 				if err != nil {
