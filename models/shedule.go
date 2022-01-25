@@ -14,6 +14,7 @@ type Schedule struct {
 	Time        string `gorm:"type:time" json:"time"`
 	Day         string `json:"day"`
 	SubName     string `json:"subject"`
+	Week        int    `json:"week"`
 }
 
 func (schedule *Schedule) Create() map[string]interface{} {

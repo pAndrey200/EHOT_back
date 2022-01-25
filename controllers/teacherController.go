@@ -158,6 +158,27 @@ type stud struct {
 	Date      string `json:"date"`
 }
 
+var ChetnostOfWeek = func(date time.Time) int {
+	l, _ := time.LoadLocation("Europe/Moscow")
+	startDate := time.Date(time.Now().Year(), time.Month(2), 7, 0, 0, 0, 0, l)
+	k := 1
+	_, st := startDate.ISOWeek()
+	_, en := date.ISOWeek()
+	if st > en {
+		return -2
+	}
+	for st != en {
+		k++
+		st++
+	}
+	if k%2 == 1 {
+		return 1
+	} else {
+		return -1
+	}
+
+}
+
 var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 	month, _ := strconv.Atoi(mux.Vars(r)["month"])
 	subId, _ := strconv.Atoi(mux.Vars(r)["sub_id"])
@@ -180,7 +201,7 @@ var GetGroupAttendance = func(w http.ResponseWriter, r *http.Request) {
 	k := 0
 	for date.Month() == time.Month(month) {
 		for i := 0; i < len(temp); i++ {
-			if strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String()) {
+			if (strings.ToLower(temp[i].Day) == strings.ToLower(date.Weekday().String())) && (temp[i].Week == 0 || temp[i].Week == ChetnostOfWeek(date)) {
 				err := models.GetDB().Table("students").Where("students.group = ?", temp[i].Group).Find(&students).Error
 				fmt.Println(temp[i].Group)
 				if err != nil {
